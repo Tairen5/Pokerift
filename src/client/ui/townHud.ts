@@ -2,7 +2,7 @@
  * Interfaz (DOM) de las zonas explorables: nombre de la zona, grupo, avisos,
  * diálogo de salida y menú de pausa. Independiente del HUD de mazmorra.
  */
-import { esc, portraitFrame } from './kit';
+import { esc, portraitFrame, touchUi } from './kit';
 
 export interface PartyEntry {
   name: string;
@@ -19,14 +19,17 @@ export class TownHud {
   promptOpen = false;
   menuOpen = false;
 
-  constructor() {
+  /** @param onMenu abre el menú de pausa (botón táctil; con teclado, Esc). */
+  constructor(onMenu: () => void) {
     this.root = document.getElementById('town-hud')!;
     this.root.innerHTML = `
       <div id="th-zone" class="panel"></div>
       <div id="th-party" class="panel"></div>
       <div id="th-dialog" class="panel hidden"></div>
       <div id="th-toast" class="win hidden"></div>
-      <div id="th-help">Flechas/WASD: moverse · Mayús: correr · clic: caminar hacia el puntero · Esc: menú</div>`;
+      <div id="th-help">${touchUi() ? 'Mantén el dedo en la pantalla para caminar hacia él' : 'Flechas/WASD: moverse · Mayús: correr · clic: caminar hacia el puntero · Esc: menú'}</div>
+      <button id="th-menu-btn" class="win">Menú</button>`;
+    this.q('#th-menu-btn').addEventListener('click', () => !this.promptOpen && onMenu());
     this.root.classList.remove('hidden');
   }
 

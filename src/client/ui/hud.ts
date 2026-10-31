@@ -22,7 +22,7 @@ import { hitChance } from '../../shared/engine/combat';
 import HUD_GLYPHS from '../assets/hud-glyphs.generated.json';
 import { ROM_UI } from '../assets/ui-rom.generated';
 import { CATALOG } from '../assets/catalog';
-import { choiceBox, dialog, esc, menuList, portraitFrame, titleText, win } from './kit';
+import { choiceBox, dialog, esc, menuList, portraitFrame, titleText, touchUi, win } from './kit';
 
 export { portraitHtml } from './kit';
 
@@ -65,6 +65,8 @@ export interface HudCallbacks {
   onTouchDir(dir: number): void;
   onTouchAttack(): void;
   onTouchWait(): void;
+  /** «Suelo»: la escalera o el objeto que hay bajo el jugador. */
+  onTouchGround(): void;
   onToggleBag(): void;
 }
 
@@ -137,8 +139,8 @@ export class Hud {
       <div id="hud-end" class="hidden"></div>
       <div id="hud-floorcard" class="hidden"></div>
       <div id="touch-controls">
-        <div class="dpad">${[7, 8, 9, 4, 5, 6, 1, 2, 3].map((n) => `<button data-num="${n}">${'↖↑↗←·→↙↓↘'[[7, 8, 9, 4, 5, 6, 1, 2, 3].indexOf(n)]}</button>`).join('')}</div>
-        <div class="tbtns"><button data-t="attack">Atacar</button><button data-t="bag">Mochila</button></div>
+        <div class="dpad">${[7, 8, 9, 4, 5, 6, 1, 2, 3].map((n) => `<button data-num="${n}">${'↖↑↗← →↙↓↘'[[7, 8, 9, 4, 5, 6, 1, 2, 3].indexOf(n)]}</button>`).join('')}</div>
+        <div class="tbtns"><button data-t="attack">Atacar</button><button data-t="ground">Suelo</button><button data-t="bag">Mochila</button></div>
       </div>`;
     this.teamEl = this.q('#hud-team');
     this.floorEl = this.q('#hud-floor');
@@ -191,9 +193,10 @@ export class Hud {
       }
       if (b.dataset.t === 'attack') this.cb.onTouchAttack();
       if (b.dataset.t === 'bag') this.cb.onToggleBag();
+      if (b.dataset.t === 'ground') this.cb.onTouchGround();
     });
     this.root.classList.remove('hidden');
-    this.log('H: controles · L: historial de mensajes');
+    this.log(touchUi() ? 'Toca los mensajes para ver el historial.' : 'H: controles · L: historial de mensajes');
   }
 
   private q(sel: string) {

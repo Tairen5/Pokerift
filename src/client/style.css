@@ -164,6 +164,12 @@ label { display: block; margin: calc(2px * var(--s)) 0; color: var(--muted); }
 .sp.sel { color: var(--accent); background: rgba(248, 224, 80, 0.12); outline: var(--px) solid var(--accent); }
 .row { display: flex; gap: calc(6px * var(--s)); flex-wrap: wrap; margin-top: calc(3px * var(--s)); }
 .menu .row button { flex: 1; }
+/* Pantallas bajas (móvil en horizontal): panel más ancho para que no haya que desplazar. */
+@media (max-height: 500px) {
+  #menu { padding: 4px; }
+  .menu { width: min(800px, 100%); }
+  .menu h1 { font-size: 25px; }
+}
 .history, .lobby { margin: 0; padding-left: calc(6px * var(--s)); list-style: none; }
 .history li, .lobby li { margin: var(--px) 0; }
 .history .cleared { color: #a8f0a0; }
@@ -276,20 +282,31 @@ label { display: block; margin: calc(2px * var(--s)) 0; color: var(--muted); }
 .end-box td:last-child { color: var(--accent); text-align: right; }
 #touch-controls { display: none; }
 
+/* ── Pantallas táctiles (móvil en horizontal) ──
+ * Cruceta abajo a la izquierda, acciones y movimientos abajo a la derecha, mensajes
+ * entre ambos y ubicación encima de la cruceta: el centro (el jugador) queda libre. */
 @media (pointer: coarse), (max-width: 720px) {
-  #hud-minimap { width: 112px; height: 64px; }
-  #hud-team { width: 180px; }
-  #hud-team .member:not(.me) { display: none; }
-  #hud-bottom { bottom: 150px; }
-  #hud-moves { width: 150px; }
-  #touch-controls { display: flex; position: absolute; bottom: 8px; left: 8px; gap: 8px; align-items: flex-end; }
-  .dpad { display: grid; grid-template-columns: repeat(3, 40px); gap: 3px; }
-  .dpad button, .tbtns button { padding: 0; border: 8px solid transparent; border-image: url('/assets/ui/frame-blue.png') 8 fill / 8px repeat; }
-  .dpad button { width: 40px; height: 40px; }
+  #hud { --pad: 46px; --gap: 4px; --dpad: calc(var(--pad) * 3 + var(--gap) * 2); }
+  #hud-team .member:not(.big) { display: none; }
+  #hud-bottom { left: calc(var(--dpad) + 12px); bottom: 4px; right: 4px; }
+  #hud-floor { position: fixed; left: 6px; bottom: calc(var(--dpad) + 12px); max-width: none; }
+  #hud-log { max-width: none; }
+  #hud-moves { min-width: 0; width: 170px; max-width: none; }
+  #hud-prompt { bottom: 4px; }
+  #touch-controls { display: block; }
+  .dpad { position: fixed; left: 6px; bottom: 6px; display: grid; grid-template-columns: repeat(3, var(--pad)); gap: var(--gap); }
+  .dpad button, .tbtns button { padding: 0; border: 8px solid transparent; border-image: var(--frame, url('/assets/ui/frame-blue.png')) 8 fill / 8px repeat;
+    display: flex; align-items: center; justify-content: center; touch-action: manipulation; -webkit-tap-highlight-color: transparent; user-select: none; }
+  .dpad button { width: var(--pad); height: var(--pad); }
+  /* Centro de la cruceta: esperar un turno (punto dibujado; la fuente no tiene «·»). */
+  .dpad button[data-num="5"]::after { content: ''; width: 4px; height: 4px; background: var(--text); box-shadow: 1px 1px 0 #000; }
   .dpad button::before, .tbtns button::before { display: none; }
-  .tbtns { display: flex; flex-direction: column; gap: 6px; }
-  .tbtns button { height: 40px; padding: 0 6px; }
+  .dpad button:hover, .tbtns button:hover { color: var(--text); }
+  .dpad button:active, .tbtns button:active { color: var(--accent); filter: brightness(1.3); }
+  .tbtns { position: fixed; right: 4px; bottom: calc(var(--lh) * 4 + 16px + 10px); display: flex; gap: 4px; }
+  .tbtns button { height: 40px; padding: 0 4px; min-width: 56px; }
 }
+.rom-ui .dpad button, .rom-ui .tbtns button { --frame: url('/assets/ui/rom/frame-blue.png'); }
 
 /* ── Plaza (zonas explorables) ── */
 #town-hud { position: fixed; inset: 0; pointer-events: none; }
@@ -308,4 +325,9 @@ label { display: block; margin: calc(2px * var(--s)) 0; color: var(--muted); }
 #th-dialog button.primary { border: 0; border-image: none; padding-left: calc(11px * var(--s)); }
 #th-toast { position: absolute; top: calc(30px * var(--s)); left: 50%; transform: translateX(-50%); pointer-events: none; white-space: nowrap;
   padding: 0 calc(4px * var(--s)); }
+#th-menu-btn { display: none; }
+@media (pointer: coarse), (max-width: 720px) {
+  #th-menu-btn { display: block; position: absolute; right: 4px; bottom: 4px; height: 40px; padding: 0 6px; touch-action: manipulation; }
+  #th-menu-btn::before { display: none; }
+}
 #th-help { position: absolute; bottom: calc(3px * var(--s)); left: calc(3px * var(--s)); color: var(--muted); font-size: var(--fs-sm); pointer-events: none; }

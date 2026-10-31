@@ -132,6 +132,7 @@ export class DungeonScene extends Phaser.Scene {
       onTouchAttack: () => this.tryAct({ type: 'attack' }),
       onTouchWait: () => this.tryAct({ type: 'wait' }),
       onToggleBag: () => this.state && this.hud.toggleBag(this.state),
+      onTouchGround: () => this.ground(),
     });
 
     const kb = this.input.keyboard!;
@@ -856,15 +857,21 @@ export class DungeonScene extends Phaser.Scene {
       case 'Numpad5':
         this.tryAct({ type: 'wait' });
         break;
-      case 'Enter': {
-        const me = this.me();
-        if (me && me.pos.x === this.state.map.stairs.x && me.pos.y === this.state.map.stairs.y) this.hud.showStairsPrompt(true);
+      case 'Enter':
+        this.ground(false);
         break;
-      }
       default:
         return;
     }
     ev.preventDefault();
+  }
+
+  /** Lo que hay bajo el jugador: en la escalera, su menú; si no (y se pide), recoger el objeto. */
+  private ground(pickup = true) {
+    const me = this.me();
+    if (!me || !this.state) return;
+    if (me.pos.x === this.state.map.stairs.x && me.pos.y === this.state.map.stairs.y) this.hud.showStairsPrompt(true);
+    else if (pickup) this.tryAct({ type: 'pickup' });
   }
 
   private onPointer(p: Phaser.Input.Pointer) {

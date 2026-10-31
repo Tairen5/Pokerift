@@ -81,7 +81,7 @@ export class TownScene extends Phaser.Scene {
 
     this.drawMap();
 
-    this.hud = new TownHud();
+    this.hud = new TownHud(() => this.openMenu());
     this.hud.setZone(zone.name, this.data0.online?.code);
 
     const online = this.data0.online;

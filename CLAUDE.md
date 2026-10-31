@@ -13,6 +13,7 @@ npm test               # Vitest (motor, generador, combate, servidor, integraci�
 npm run validate:data  # datos del juego y catálogo de recursos
 npm run build          # obligatorio antes de las pruebas en navegador
 npm run smoke          # flujo completo en Chrome real: intro → menú → casa → zonas exteriores → mazmorra; cooperativo con 2 navegadores
+npm run mobile-check   # móvil en horizontal (táctil, 2 tamaños): todo el flujo a toques; capturas en smoke-output/mobile/
 npm run sprite-check   # sprites en mazmorra: idle en bucle, sombra/apoyo, paso, sombra amarilla/negra
 npm run light-check    # iluminación de la mazmorra (sala, paso, pasillo); capturas luz-*.png
 npm run gen-preview    # pisos de cada distribución del generador en smoke-output/gen/*.png (-- expedition 12: los de la mazmorra)

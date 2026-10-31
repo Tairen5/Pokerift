@@ -32,6 +32,9 @@ export interface WinOpts {
   attrs?: string;
 }
 
+/** Pantalla táctil (móvil/tableta): se muestran los controles táctiles en vez de la ayuda de teclado. */
+export const touchUi = () => matchMedia('(pointer: coarse)').matches;
+
 export const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
 
 /** Clases de una caja (para elementos que ya existen y solo cambian de aspecto). */

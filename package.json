@@ -27,6 +27,7 @@
     "import:species": "node tools/import-rom-species.mjs",
     "intro-capture": "tsx tools/intro-capture.ts",
     "ui-check": "tsx tools/ui-check.ts",
+    "mobile-check": "tsx tools/mobile-check.ts",
     "gen-preview": "tsx tools/gen-preview.ts",
     "import:dungeons": "node tools/import-rom-dungeons.mjs"
   },

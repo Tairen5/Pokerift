@@ -34,9 +34,11 @@ export interface AppApi {
   leaveTown(): void;
   animationSpeed(): number;
   cycleAnimationSpeed(): number;
+  musicVolume(): number;
+  cycleMusicVolume(): number;
 }
 
-export type MenuOptionId = 'solo' | 'create' | 'join' | 'history' | 'speed' | 'credits';
+export type MenuOptionId = 'solo' | 'create' | 'join' | 'history' | 'speed' | 'music' | 'credits';
 
 export function app(scene: Phaser.Scene): AppApi {
   return scene.registry.get('app') as AppApi;

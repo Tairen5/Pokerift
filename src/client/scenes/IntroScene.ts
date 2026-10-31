@@ -16,6 +16,7 @@ import Phaser from 'phaser';
 import { CATALOG } from '../assets/catalog';
 import { animKey } from './BootScene';
 import { STAGE_H, STAGE_W, app, fitStage, msgText } from './stage';
+import { music } from '../audio/music';
 
 /** Duración de cada escena (ms) sin contar los fundidos. */
 const SCENE_MS = 5600;
@@ -41,6 +42,8 @@ export class IntroScene extends Phaser.Scene {
   }
 
   create() {
+    // Música del opening (B_SYS_P3_OPENING); sigue en el título.
+    music.play(1);
     this.skipped = false;
     fitStage(this);
     const cam = this.cameras.main;

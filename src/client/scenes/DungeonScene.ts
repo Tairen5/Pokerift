@@ -6,7 +6,7 @@
 import Phaser from 'phaser';
 import { ALL_DIRS, DIR_DELTA, type Dir, chebyshev, deltaToDir, isDiagonal, step } from '../../shared/core/geometry';
 import { getMove } from '../../shared/data/moves';
-import { floorName, floorTileset, getDungeon } from '../../shared/data/dungeons';
+import { floorMusic, floorName, floorTileset, getDungeon } from '../../shared/data/dungeons';
 
 /** Tiempo que se ve la pantalla negra con el nombre del piso. */
 const FLOOR_CARD_MS = 1300;
@@ -26,6 +26,7 @@ import { PokemonSprite } from '../render/pokemonSprite';
 import { MSG_FONT } from './stage';
 import { romNumber, type NumberKind } from '../render/damageNumbers';
 import { Hud } from '../ui/hud';
+import { music } from '../audio/music';
 import type { GameSession, SessionUpdate } from '../net/session';
 import { recordExpedition, loadProfile } from '../meta/profile';
 
@@ -218,6 +219,8 @@ export class DungeonScene extends Phaser.Scene {
       const card = floorIdx >= 0 || firstFloor;
       if (!firstFloor && floorIdx >= 0) await this.fade(true);
       if (card) this.hud.showFloorCard(floorName(getDungeon(u.state.dungeonId), u.state.floor), u.state.floor);
+      // Si el piso nuevo es de otra mazmorra de la expedición, cambia la música (la misma sigue sin cortarse).
+      music.play(floorMusic(getDungeon(u.state.dungeonId), u.state.floor));
       this.buildFloor(u.state);
       if (card) {
         await new Promise<void>((res) => this.time.delayedCall(FLOOR_CARD_MS, () => res()));

@@ -74,6 +74,8 @@ export interface FloorBand {
   name?: string;
   /** Tileset de este tramo (si no, el de la mazmorra). */
   tileset?: string;
+  /** Música (music_id = SOUND/BGM/bgmNNNN.smd de la ROM). */
+  music?: number;
   /** Cada cuántos turnos aparece un enemigo nuevo (0 = nunca). */
   spawnInterval: number;
   maxEnemies: number;
@@ -110,7 +112,7 @@ function expeditionBands(): FloorBand[] {
     for (const f of seg.floors) {
       const n = bands.length + 1;
       bands.push({
-        fromFloor: n, toFloor: n, name: seg.name, tileset: seg.tileset,
+        fromFloor: n, toFloor: n, name: seg.name, tileset: seg.tileset, music: f.music,
         floor: {
           layout: (FLOOR_LAYOUTS as readonly string[]).includes(f.layout) ? (f.layout as FloorLayout) : 'large',
           roomDensity: f.roomDensity, floorConnectivity: f.floorConnectivity, enemyDensity: f.enemyDensity,
@@ -172,6 +174,11 @@ export function bandForFloor(d: DungeonData, floor: number): FloorBand {
 /** Nombre que se muestra en un piso: el de su tramo (la mazmorra de EoS) o el de la mazmorra. */
 export function floorName(d: DungeonData, floor: number): string {
   return bandForFloor(d, floor).name ?? d.name;
+}
+
+/** Música de un piso (null = silencio). */
+export function floorMusic(d: DungeonData, floor: number): number | null {
+  return bandForFloor(d, floor).music ?? null;
 }
 
 /** Tileset de un piso. */

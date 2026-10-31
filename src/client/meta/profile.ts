@@ -23,7 +23,8 @@ export interface Profile {
   lastSpecies: string;
   history: ExpeditionRecord[];
   totals: { expeditions: number; cleared: number; enemiesDefeated: number };
-  settings: { animationSpeed: number };
+  /** musicVolume: 0–1. */
+  settings: { animationSpeed: number; musicVolume: number };
 }
 
 const KEY = 'pokerift.profile.v1';
@@ -33,7 +34,7 @@ const DEFAULT: Profile = {
   lastSpecies: 'pikachu',
   history: [],
   totals: { expeditions: 0, cleared: 0, enemiesDefeated: 0 },
-  settings: { animationSpeed: 1 },
+  settings: { animationSpeed: 1, musicVolume: 1 },
 };
 
 export function loadProfile(): Profile {

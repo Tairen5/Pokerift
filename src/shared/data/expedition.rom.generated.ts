@@ -23,6 +23,8 @@ export interface RomExpeditionFloor {
   waterDensity: number;
   darkness: number;
   maxCoin: number;
+  /** Música del piso (music_id = SOUND/BGM/bgmNNNN.smd). */
+  music: number;
   enemies: { species: string; md: number; level: number; weight: number }[];
   traps: { trap: string; weight: number }[];
   items: { item: string; romId: number; weight: number }[];
@@ -65,6 +67,7 @@ export const ROM_EXPEDITION: RomExpeditionSegment[] | null = [
     "waterDensity": 0,
     "darkness": 2,
     "maxCoin": 50,
+    "music": 21,
     "enemies": [
      {
       "species": "shellder",
@@ -126,6 +129,7 @@ export const ROM_EXPEDITION: RomExpeditionSegment[] | null = [
     "waterDensity": 0,
     "darkness": 2,
     "maxCoin": 50,
+    "music": 21,
     "enemies": [
      {
       "species": "shellder",
@@ -187,6 +191,7 @@ export const ROM_EXPEDITION: RomExpeditionSegment[] | null = [
     "waterDensity": 0,
     "darkness": 2,
     "maxCoin": 50,
+    "music": 21,
     "enemies": [
      {
       "species": "shellder",
@@ -253,6 +258,7 @@ export const ROM_EXPEDITION: RomExpeditionSegment[] | null = [
     "waterDensity": 0,
     "darkness": 2,
     "maxCoin": 50,
+    "music": 21,
     "enemies": [
      {
       "species": "shellder",
@@ -319,6 +325,7 @@ export const ROM_EXPEDITION: RomExpeditionSegment[] | null = [
     "waterDensity": 0,
     "darkness": 2,
     "maxCoin": 50,
+    "music": 21,
     "enemies": [
      {
       "species": "shellder",
@@ -393,6 +400,7 @@ export const ROM_EXPEDITION: RomExpeditionSegment[] | null = [
     "waterDensity": 8,
     "darkness": 0,
     "maxCoin": 75,
+    "music": 22,
     "enemies": [
      {
       "species": "lileep",
@@ -533,6 +541,7 @@ export const ROM_EXPEDITION: RomExpeditionSegment[] | null = [
     "waterDensity": 8,
     "darkness": 0,
     "maxCoin": 75,
+    "music": 22,
     "enemies": [
      {
       "species": "lileep",
@@ -673,6 +682,7 @@ export const ROM_EXPEDITION: RomExpeditionSegment[] | null = [
     "waterDensity": 8,
     "darkness": 0,
     "maxCoin": 75,
+    "music": 22,
     "enemies": [
      {
       "species": "lileep",
@@ -814,6 +824,7 @@ export const ROM_EXPEDITION: RomExpeditionSegment[] | null = [
     "waterDensity": 8,
     "darkness": 0,
     "maxCoin": 75,
+    "music": 22,
     "enemies": [
      {
       "species": "lileep",
@@ -955,6 +966,7 @@ export const ROM_EXPEDITION: RomExpeditionSegment[] | null = [
     "waterDensity": 8,
     "darkness": 0,
     "maxCoin": 75,
+    "music": 22,
     "enemies": [
      {
       "species": "lileep",
@@ -1119,6 +1131,7 @@ export const ROM_EXPEDITION: RomExpeditionSegment[] | null = [
     "waterDensity": 0,
     "darkness": 0,
     "maxCoin": 75,
+    "music": 23,
     "enemies": [
      {
       "species": "machop",
@@ -1386,6 +1399,7 @@ export const ROM_EXPEDITION: RomExpeditionSegment[] | null = [
     "waterDensity": 0,
     "darkness": 0,
     "maxCoin": 75,
+    "music": 23,
     "enemies": [
      {
       "species": "machop",
@@ -1653,6 +1667,7 @@ export const ROM_EXPEDITION: RomExpeditionSegment[] | null = [
     "waterDensity": 0,
     "darkness": 0,
     "maxCoin": 75,
+    "music": 23,
     "enemies": [
      {
       "species": "nidorina",
@@ -1907,6 +1922,7 @@ export const ROM_EXPEDITION: RomExpeditionSegment[] | null = [
     "waterDensity": 0,
     "darkness": 0,
     "maxCoin": 75,
+    "music": 23,
     "enemies": [
      {
       "species": "nidorina",
@@ -2166,6 +2182,7 @@ export const ROM_EXPEDITION: RomExpeditionSegment[] | null = [
     "waterDensity": 0,
     "darkness": 0,
     "maxCoin": 75,
+    "music": 23,
     "enemies": [
      {
       "species": "nidorina",
@@ -2433,6 +2450,7 @@ export const ROM_EXPEDITION: RomExpeditionSegment[] | null = [
     "waterDensity": 25,
     "darkness": 2,
     "maxCoin": 75,
+    "music": 24,
     "enemies": [
      {
       "species": "psyduck",
@@ -2758,6 +2776,7 @@ export const ROM_EXPEDITION: RomExpeditionSegment[] | null = [
     "waterDensity": 25,
     "darkness": 2,
     "maxCoin": 75,
+    "music": 24,
     "enemies": [
      {
       "species": "psyduck",
@@ -3083,6 +3102,7 @@ export const ROM_EXPEDITION: RomExpeditionSegment[] | null = [
     "waterDensity": 25,
     "darkness": 2,
     "maxCoin": 75,
+    "music": 24,
     "enemies": [
      {
       "species": "psyduck",
@@ -3414,6 +3434,7 @@ export const ROM_EXPEDITION: RomExpeditionSegment[] | null = [
     "waterDensity": 25,
     "darkness": 2,
     "maxCoin": 75,
+    "music": 24,
     "enemies": [
      {
       "species": "psyduck",
@@ -3745,6 +3766,7 @@ export const ROM_EXPEDITION: RomExpeditionSegment[] | null = [
     "waterDensity": 25,
     "darkness": 2,
     "maxCoin": 75,
+    "music": 24,
     "enemies": [
      {
       "species": "psyduck",
@@ -4084,6 +4106,7 @@ export const ROM_EXPEDITION: RomExpeditionSegment[] | null = [
     "waterDensity": 5,
     "darkness": 0,
     "maxCoin": 80,
+    "music": 25,
     "enemies": [
      {
       "species": "caterpie",
@@ -4648,6 +4671,7 @@ export const ROM_EXPEDITION: RomExpeditionSegment[] | null = [
     "waterDensity": 5,
     "darkness": 0,
     "maxCoin": 80,
+    "music": 25,
     "enemies": [
      {
       "species": "caterpie",
@@ -5224,6 +5248,7 @@ export const ROM_EXPEDITION: RomExpeditionSegment[] | null = [
     "waterDensity": 5,
     "darkness": 0,
     "maxCoin": 80,
+    "music": 25,
     "enemies": [
      {
       "species": "butterfree",
@@ -5782,6 +5807,7 @@ export const ROM_EXPEDITION: RomExpeditionSegment[] | null = [
     "waterDensity": 5,
     "darkness": 0,
     "maxCoin": 80,
+    "music": 25,
     "enemies": [
      {
       "species": "weedle",
@@ -6346,6 +6372,7 @@ export const ROM_EXPEDITION: RomExpeditionSegment[] | null = [
     "waterDensity": 5,
     "darkness": 0,
     "maxCoin": 80,
+    "music": 25,
     "enemies": [
      {
       "species": "kakuna",

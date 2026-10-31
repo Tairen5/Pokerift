@@ -4,6 +4,7 @@
  */
 import Phaser from 'phaser';
 import { STAGE_H, STAGE_W, app, fitStage, msgText, pmdText } from './stage';
+import { music } from '../audio/music';
 
 /** Fondo animado compartido por el título y el menú principal. */
 export function titleBackdrop(scene: Phaser.Scene, dim = 0) {
@@ -42,6 +43,8 @@ export class TitleScene extends Phaser.Scene {
    * "Pulsa Intro" parpadeando. "Pokerift" va debajo como subtítulo del fan game.
    */
   create() {
+    // [INCIERTO] Qué suena en el título del juego: aquí sigue el opening (o empieza si se llega desde el menú).
+    music.play(1);
     (this as Phaser.Scene & { __leaving?: boolean }).__leaving = false;
     fitStage(this);
     this.cameras.main.fadeIn(600, 255, 255, 255);

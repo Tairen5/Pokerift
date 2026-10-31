@@ -118,11 +118,20 @@ async function main() {
   check(await waitScene(solo, 'menu'), 'Intro en el título abre el menú principal');
   await sleep(600);
   await solo.screenshot({ path: `${OUT}/menu.png` });
+  const musicNow = async (p: Page, id: number) => {
+    for (let i = 0; i < 40; i++, await sleep(100)) if ((await G<{ playing: number | null }>(p, 'w.music')).playing === id) return true;
+    return false;
+  };
+  check(await musicNow(solo, 2), 'en el menú principal suena «Top Menu Theme» (bgm 2)');
+  for (const id of [1, 2, 9, 21, 22, 23, 24, 25]) {
+    const pr = await G<{ length: number; rate: number; offset: number; loopStart: number | null; end: number } | null>(solo, `w.probeMusic(${id})`);
+    check(!!pr && pr.end <= pr.length / pr.rate + 1e-6 && (pr.loopStart === null || pr.loopStart < pr.end), `la música ${id} se decodifica y su bucle cae dentro (${pr ? `${pr.loopStart?.toFixed(2) ?? '—'}–${pr.end.toFixed(2)} s de ${(pr.length / pr.rate).toFixed(2)}, desfase ${pr.offset.toFixed(4)}` : 'sin datos'})`);
+  }
   const menuState = () => G<[number, string[]]>(solo, '((m) => [m.index, m.options.map((o) => o.id)])(w.app.game.scene.getScene("menu"))');
   await solo.keyboard.press('ArrowUp'); // da la vuelta hasta «Otros»
   await solo.keyboard.press('Enter');
   await sleep(200);
-  check((await menuState())[1].join() === 'speed,credits,back', 'el menú principal agrupa Velocidad y Créditos en «Otros», como el original');
+  check((await menuState())[1].join() === 'speed,music,credits,back', 'el menú principal agrupa Velocidad, Música y Créditos en «Otros», como el original');
   await solo.screenshot({ path: `${OUT}/menu-otros.png` });
   await solo.keyboard.down('KeyL');
   await sleep(150);
@@ -155,6 +164,7 @@ async function main() {
   await solo.screenshot({ path: `${OUT}/zona-risco.png` });
   await walkToExit(solo, 'east');
   check(await waitZone(solo, 'town'), 'por el camino del este se llega a la Aldea Tesoro');
+  check(await musicNow(solo, 9), 'en la Aldea Tesoro suena «Treasure Town» (bgm 9)');
   await sleep(600);
   await solo.screenshot({ path: `${OUT}/zona-aldea-oeste.png` });
   // El resto de zonas, sin recorrerlas a pie: solo capturas para revisarlas.
@@ -176,6 +186,7 @@ async function main() {
   check(!(await solo.isVisible('#hud-floorcard:not(.hidden)')), 'la pantalla del piso desaparece sola');
   const s0 = JSON.parse(await state(solo));
   check(s0?.floor === 1 && s0?.dungeonId === 'expedition', 'la expedición empieza en el piso 1 (Cueva Bajamar)');
+  check(await musicNow(solo, 21), 'en la Cueva Bajamar suena su música (bgm 21)');
   for (const k of ['ArrowRight', 'ArrowDown', 'ArrowLeft', 'ArrowUp', 'Space', 'ArrowRight', 'ArrowDown']) {
     await solo.keyboard.down(k);
     await sleep(320);

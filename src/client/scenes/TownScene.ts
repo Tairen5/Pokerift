@@ -15,6 +15,7 @@ import { getDungeon } from '../../shared/data/dungeons';
 import { PokemonSprite } from '../render/pokemonSprite';
 import type { OnlineSession } from '../net/online';
 import { TownHud } from '../ui/townHud';
+import { ZONE_MUSIC, music } from '../audio/music';
 import { MSG_FONT, app } from './stage';
 
 export interface TownSceneData {
@@ -80,6 +81,7 @@ export class TownScene extends Phaser.Scene {
     this.scale.on('resize', zoom);
 
     this.drawMap();
+    music.play(ZONE_MUSIC[zone.id] ?? null);
 
     this.hud = new TownHud(() => this.openMenu());
     this.hud.setZone(zone.name, this.data0.online?.code);

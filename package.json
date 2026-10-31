@@ -25,6 +25,7 @@
     "import:ui": "node tools/import-rom-ui.mjs",
     "import:town": "node tools/import-rom-town.mjs",
     "import:species": "node tools/import-rom-species.mjs",
+    "import:music": "node tools/import-rom-music.mjs",
     "intro-capture": "tsx tools/intro-capture.ts",
     "ui-check": "tsx tools/ui-check.ts",
     "mobile-check": "tsx tools/mobile-check.ts",
@@ -46,6 +47,7 @@
     "tsx": "^4.23.15",
     "typescript": "^5.9.3",
     "vite": "^6.4.5",
-    "vitest": "^3.2.7"
+    "vitest": "^3.2.7",
+    "wasm-media-encoders": "^0.7.0"
   }
 }

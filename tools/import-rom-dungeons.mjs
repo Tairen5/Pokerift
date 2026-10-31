@@ -174,6 +174,7 @@ const layout = (i) => {
     kecleonShopChance: m[p + 7], monsterHouseChance: m[p + 8], allowDeadEnds: !!m[p + 11], roomImperfections: !!(m[p + 13] & 4),
     secondaryTerrain: !!(m[p + 13] & 1), itemDensity: m[p + 15], trapDensity: m[p + 16], fixedRoom: m[p + 18], extraHallways: m[p + 19],
     buriedItemDensity: m[p + 20], waterDensity: m[p + 21], darkness: m[p + 22], maxCoin: m[p + 23] * 5,
+    music: floorMusic(m[p + 3]),
   };
 };
 /** Pesos acumulados (hasta 10000) → pesos individuales. */
@@ -226,6 +227,22 @@ const items = (i) => {
     }
   return out.sort((a, b) => b.weight - a.weight);
 };
+
+// ── Música del piso ──
+// floor_properties 0x3 indexa MUSIC_ID_TABLE (overlay 10, NA 0x22C555C: 170 music_id de 16 bits);
+// con el bit 0x8000 es una fila de RANDOM_MUSIC_ID_TABLE (NA 0x22C51FC: 30×4), de la que el juego
+// elige al azar (pmdsky-debug, symbols/overlay10.yml). music_id = número de SOUND/BGM/bgmNNNN.smd.
+function overlay(romBuf, n) {
+  const e = romBuf.readUInt32LE(0x50) + n * 32, fatOff = romBuf.readUInt32LE(0x48), id = romBuf.readUInt32LE(e + 24);
+  if (romBuf.readUInt32LE(e + 28) & 0x01000000) throw new Error(`overlay ${n} comprimida: no soportado`);
+  return { ram: romBuf.readUInt32LE(e + 4), data: romBuf.subarray(romBuf.readUInt32LE(fatOff + id * 8), romBuf.readUInt32LE(fatOff + id * 8 + 4)) };
+}
+const ov10 = overlay(romBuf, 10);
+function floorMusic(idx) {
+  const id = ov10.data.readUInt16LE(0x22c555c - ov10.ram + idx * 2);
+  // [INCIERTO] Pisos con música al azar: se toma la primera de su fila (no los hay en la expedición).
+  return id & 0x8000 ? ov10.data.readUInt16LE(0x22c51fc - ov10.ram + (id & 0x7fff) * 8) : id;
+}
 
 // ── DUNGEON_DATA_LIST ──
 const { a: arm, ram } = arm9(romBuf);
@@ -344,6 +361,8 @@ export interface RomExpeditionFloor {
   waterDensity: number;
   darkness: number;
   maxCoin: number;
+  /** Música del piso (music_id = SOUND/BGM/bgmNNNN.smd). */
+  music: number;
   enemies: { species: string; md: number; level: number; weight: number }[];
   traps: { trap: string; weight: number }[];
   items: { item: string; romId: number; weight: number }[];

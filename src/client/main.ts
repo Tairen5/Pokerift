@@ -22,6 +22,7 @@ import { OnlineSession } from './net/online';
 import { hideMenu, showCredits, showHistory, showLobby, showMessage, showSetup, type SetupKind } from './ui/menu';
 import { validateCatalog, CATALOG } from './assets/catalog';
 import { loadProfile, saveProfile } from './meta/profile';
+import { MUSIC_VOLUMES, music } from './audio/music';
 import { SPECIES } from '../shared/data/species';
 import { DUNGEONS } from '../shared/data/dungeons';
 import { RETURN_PLACE, START_PLACE } from '../shared/town/zone';
@@ -129,6 +130,19 @@ class App implements AppApi {
 
   animationSpeed() {
     return loadProfile().settings.animationSpeed || 1;
+  }
+
+  musicVolume() {
+    return loadProfile().settings.musicVolume;
+  }
+
+  cycleMusicVolume() {
+    const p = loadProfile();
+    const i = MUSIC_VOLUMES.findIndex((v) => Math.abs(v - p.settings.musicVolume) < 0.01);
+    p.settings.musicVolume = MUSIC_VOLUMES[(i + 1) % MUSIC_VOLUMES.length];
+    saveProfile(p);
+    music.setVolume(p.settings.musicVolume);
+    return p.settings.musicVolume;
   }
 
   cycleAnimationSpeed() {
@@ -263,6 +277,7 @@ class App implements AppApi {
 }
 
 const app = new App();
+music.setVolume(loadProfile().settings.musicVolume);
 
 // Gancho de depuración (consola del navegador y pruebas de humo).
 (window as unknown as { __pokerift: object }).__pokerift = {
@@ -276,6 +291,10 @@ const app = new App();
   get state() {
     return (app.session ?? app.online)?.state ?? null;
   },
+  get music() {
+    return music.debug();
+  },
+  probeMusic: (id: number) => music.probe(id),
   get townPos() {
     return app.scene === 'town' ? (app.game.scene.getScene('town') as unknown as { pos: { x: number; y: number } }).pos : null;
   },

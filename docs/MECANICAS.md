@@ -635,13 +635,34 @@ Los recortes salen de `status effects.png`. Si hay varios, se van alternando cad
   - Para cambiar de zona hay que estar en la salida (`changeZone`); lo valida el servidor.
   - Entrar en una mazmorra exige estar en una salida activa. Cualquier jugador puede hacerlo y va todo el grupo, esté donde esté, igual que con las escaleras.
 
+## Música
+
+Importada de la ROM del usuario con `npm run import:music -- <rom>` (`tools/import-rom-music.mjs`). El juego no guarda la música grabada: usa el driver DSE de Procyon Studios, con una secuencia `SOUND/BGM/bgmNNNN.smd` por pista, su banco de instrumentos `bgmNNNN.swd` y las muestras en `SOUND/BGM/bgm.swd`. La herramienta interpreta la secuencia, la toca con las muestras, programas y envolventes originales y guarda un MP3 con su punto de bucle. El juego la reproduce con WebAudio (`src/client/audio/music.ts`) en bucle sin cortes. Volumen en «Otros → Música».
+
+**Qué suena en cada sitio** (número = `enum music_id` de pmdsky-debug = archivo `bgmNNNN`, comprobado con el nombre interno de cada `.smd`):
+
+| Sitio | Pista | Fuente |
+|---|---|---|
+| Menú principal | 2 «Top Menu Theme» (`B_SYS_MENU`) | nombre en el enum y en el `.smd` |
+| Intro y título | 1 (`B_SYS_P3_OPENING`) | nombre del `.smd`. [INCIERTO] Qué suena en el título del juego: aquí sigue el opening |
+| Aldea Tesoro, Encrucijada | 9 «Treasure Town» | `bgm_PlayFadeIn(9)` en `SCRIPT/T01P01A`, `T01P02A` y `P01P01A/enter00.ssb` (desensamblado con la tabla de códigos de `pmd2scriptdata.xml` de SkyTemple) |
+| Exterior del gremio | 9 [INCIERTO] | su música la pone una rutina común, no su script; se usa la de la aldea |
+| Casa, Risco Sharpedo, playa | silencio | los scripts ponen 100 «Ocean1» (sonido del mar; la casa, 10 «Do Your Best As Always» a partir de un punto de la historia). Esa secuencia usa eventos sin documentar (0xB2, 0xC0, 0xD4, 0xE2, 0xEA…) y aún no se importa |
+| Expedición | 21–25 «Beach Cave», «Drenched Bluff», «Mt. Bristle», «Waterfall Cave», «Apple Woods» | byte 3 de `floor_properties` de cada piso → `MUSIC_ID_TABLE` (overlay 10, NA 0x22C555C) [VERIFICADO con la ROM: una pista por mazmorra en todos sus pisos] |
+
+**Síntesis.** Formato según Project Pokémon («DSE SWDL/SMDL Format», psy_commando) y ppmdu_2 (lectura de notas: octava acumulada, duración en big endian que se repite si la nota no la trae; pausas). Las duraciones de las envolventes se leen de la ROM (`MUSIC_DURATION_LOOKUP_TABLE_1/2`, arm9 NA 0x20B0F50/0x20B1050; en ms, la de 16 bits por `envmult`). La posición de cada muestra en `pcmd` es la de la tabla del banco principal; la del `.swd` de cada pista no apunta a `bgm.swd`.
+
+- **Afinación** [VERIFICADO]: la altura sale solo de la nota raíz de cada split. `ctune` (−7) y `ftune` (1/256 de semitono) codifican la frecuencia de la muestra respecto a 32 728 Hz: muestra 121, 32728·2^((−7+87/256)/12) = 22 275 Hz, y su campo dice 22 276. `--check` lo comprueba con la altura real de cada instrumento: suena a su nota o una octava por debajo, según cómo estén etiquetadas las muestras, sin que ningún campo lo distinga.
+- [INCIERTO] Volumen (producto lineal de velocidad, volumen y expresión de pista, programa y split; el driver usa una tabla de decibelios, `VOLUME_TABLE`), forma de la envolvente (lineal), rango del pitch bend (0xDB o el byte 0x02 del split; 2 semitonos), sin LFO (vibrato), sin límite de voces. Programas que no están en el banco (programa 24 en «Treasure Town», pista 14) quedan en silencio, como en ppmdu_2.
+- Bucle: intro + segunda vuelta del bucle (que ya lleva las colas de la primera). El MP3 (LAME) añade 1105 muestras al principio, que Chrome no recorta (medido); el reproductor lo detecta por la longitud decodificada.
+
 ## Limitaciones conocidas
 
 - Sprites y retratos de SpriteCollab para las 15 especies del juego. Efectos de movimientos, estados, objetos y 4 trampas con recursos originales (ver "Efectos de movimientos, estados y objetos"); las trampas de Sueño, Veneno, Barro e Invocación siguen con placeholder.
 - Faltan por implementar: velocidad, tirar objetos, objetos equipables, tiendas Kecleon, salas de monstruos, agua y lava, clima y la mayoría de habilidades.
 - Los mapas exteriores son una sola imagen: los Pokémon siempre se dibujan por delante de árboles y tejados. Para que pasen por detrás hay que separar capas; la hoja `Assets/Lobby/DS/Treasure town tiles.png` trae los edificios de la aldea sueltos y puede servir.
 - Interiores (gremio, dojo de Marowak) sin hacer: hay mapas en `Assets/Lobby/DS/Guild` y `Marowak's dojo.png`.
-- La intro y el menú no tienen música ni efectos de sonido (no hay recursos de audio).
+- Sin efectos de sonido. Sin el sonido del mar de la casa, el Risco Sharpedo y la playa (ver «Música»).
 - Hay pocos movimientos (29, contando el ataque normal) y especies (15). El catálogo crece añadiendo datos.
 - No hay cuentas ni emparejamiento público. Las salas viven en memoria: si el servidor se reinicia, se pierden.
 - El servidor envía el estado completo en cada turno (unos 10–20 KB). Es suficiente para 2–4 jugadores.

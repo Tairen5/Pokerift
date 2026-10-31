@@ -13,6 +13,7 @@ import Phaser from 'phaser';
 import { ROM_UI } from '../assets/ui-rom.generated';
 import { type MenuOptionId, STAGE_H, STAGE_W, app, fitStage, msgText, pmdWindow } from './stage';
 import { logo, titleBackdrop } from './TitleScene';
+import { music } from '../audio/music';
 
 interface Option {
   id: MenuOptionId | 'other' | 'back';
@@ -51,12 +52,14 @@ export class MainMenuScene extends Phaser.Scene {
   private otherOptions(): Option[] {
     return [
       { id: 'speed', label: () => `Velocidad: x${app(this).animationSpeed()}`, desc: 'Velocidad de las animaciones\nen las mazmorras.' },
+      { id: 'music', label: () => `Música: ${app(this).musicVolume() ? `${Math.round(app(this).musicVolume() * 100)}%` : 'No'}`, desc: 'Volumen de la música.' },
       { id: 'credits', label: () => 'Créditos', desc: 'Procedencia de los recursos gráficos\ny sus autores.' },
       { id: 'back', label: () => 'Salir', desc: 'Vuelve al menú principal.' },
     ];
   }
 
   create() {
+    music.play(2); // «Top Menu Theme» (B_SYS_MENU)
     this.locked = false;
     this.submenu = false;
     this.input.enabled = true;
@@ -156,7 +159,10 @@ export class MainMenuScene extends Phaser.Scene {
       this.submenu = true;
       this.build(this.otherOptions(), 0);
     } else if (opt.id === 'back') this.back();
-    else if (opt.id === 'speed') {
+    else if (opt.id === 'music') {
+      app(this).cycleMusicVolume();
+      this.items[this.index].setText(opt.label());
+    } else if (opt.id === 'speed') {
       app(this).cycleAnimationSpeed();
       this.items[this.index].setText(opt.label());
     } else app(this).menuSelect(opt.id);

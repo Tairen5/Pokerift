@@ -1,0 +1,212 @@
+{
+ "frames": {
+  "chest": {
+   "frame": {
+    "x": 4,
+    "y": 20,
+    "w": 119,
+    "h": 120
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 119,
+    "h": 120
+   },
+   "sourceSize": {
+    "w": 119,
+    "h": 120
+   }
+  },
+  "letter": {
+   "frame": {
+    "x": 217,
+    "y": 102,
+    "w": 68,
+    "h": 72
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 68,
+    "h": 72
+   },
+   "sourceSize": {
+    "w": 68,
+    "h": 72
+   }
+  },
+  "map": {
+   "frame": {
+    "x": 127,
+    "y": 194,
+    "w": 101,
+    "h": 66
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 101,
+    "h": 66
+   },
+   "sourceSize": {
+    "w": 101,
+    "h": 66
+   }
+  },
+  "orb": {
+   "frame": {
+    "x": 55,
+    "y": 256,
+    "w": 73,
+    "h": 50
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 73,
+    "h": 50
+   },
+   "sourceSize": {
+    "w": 73,
+    "h": 50
+   }
+  },
+  "bag": {
+   "frame": {
+    "x": 248,
+    "y": 224,
+    "w": 111,
+    "h": 113
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 111,
+    "h": 113
+   },
+   "sourceSize": {
+    "w": 111,
+    "h": 113
+   }
+  },
+  "stone": {
+   "frame": {
+    "x": 170,
+    "y": 318,
+    "w": 50,
+    "h": 47
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 50,
+    "h": 47
+   },
+   "sourceSize": {
+    "w": 50,
+    "h": 47
+   }
+  },
+  "coin-0": {
+   "frame": {
+    "x": 124,
+    "y": 60,
+    "w": 14,
+    "h": 13
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 14,
+    "h": 13
+   },
+   "sourceSize": {
+    "w": 14,
+    "h": 13
+   }
+  },
+  "coin-1": {
+   "frame": {
+    "x": 131,
+    "y": 82,
+    "w": 16,
+    "h": 25
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 16,
+    "h": 25
+   },
+   "sourceSize": {
+    "w": 16,
+    "h": 25
+   }
+  },
+  "coin-2": {
+   "frame": {
+    "x": 118,
+    "y": 113,
+    "w": 18,
+    "h": 13
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 18,
+    "h": 13
+   },
+   "sourceSize": {
+    "w": 18,
+    "h": 13
+   }
+  },
+  "coin-3": {
+   "frame": {
+    "x": 145,
+    "y": 119,
+    "w": 15,
+    "h": 12
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 15,
+    "h": 12
+   },
+   "sourceSize": {
+    "w": 15,
+    "h": 12
+   }
+  }
+ },
+ "meta": {
+  "image": "treasure-atlas.png",
+  "size": {
+   "w": 360,
+   "h": 384
+  },
+  "scale": "1"
+ }
+}

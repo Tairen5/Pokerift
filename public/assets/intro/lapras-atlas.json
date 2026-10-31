@@ -1,0 +1,72 @@
+{
+ "frames": {
+  "lapras-0": {
+   "frame": {
+    "x": 8,
+    "y": 6,
+    "w": 118,
+    "h": 75
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 118,
+    "h": 75
+   },
+   "sourceSize": {
+    "w": 118,
+    "h": 75
+   }
+  },
+  "lapras-1": {
+   "frame": {
+    "x": 9,
+    "y": 84,
+    "w": 113,
+    "h": 75
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 113,
+    "h": 75
+   },
+   "sourceSize": {
+    "w": 113,
+    "h": 75
+   }
+  },
+  "lapras-2": {
+   "frame": {
+    "x": 7,
+    "y": 162,
+    "w": 117,
+    "h": 75
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 117,
+    "h": 75
+   },
+   "sourceSize": {
+    "w": 117,
+    "h": 75
+   }
+  }
+ },
+ "meta": {
+  "image": "lapras-atlas.png",
+  "size": {
+   "w": 210,
+   "h": 264
+  },
+  "scale": "1"
+ }
+}

@@ -1,0 +1,311 @@
+/*
+ * Interfaz al estilo de los Mundo Misterioso de DS:
+ *  - Cajas de ventana y marcos de retrato originales (Assets/HUD/Text box.png),
+ *    extraídos como nine-slice por tools/build-ui.mjs. Componentes en ui/kit.ts.
+ *  - Fuentes originales convertidas a fuentes de píxeles: PMD Message (diálogo)
+ *    y PMD Title (títulos de mazmorra). Se usan siempre a escala entera
+ *    (--s = 1 o 2) para que los píxeles se vean nítidos.
+ */
+@font-face { font-family: 'PMD Message'; src: url('/assets/fonts/pmd-message.otf') format('opentype'); font-display: block; }
+@font-face { font-family: 'PMD Sky'; src: url('/assets/fonts/rom/pmd-sky.otf') format('opentype'); font-display: block; }
+@font-face { font-family: 'PMD Title'; src: url('/assets/fonts/pmd-title.otf') format('opentype'); font-display: block; }
+
+:root {
+  --s: 2; /* escala de los píxeles de la interfaz */
+  --px: calc(1px * var(--s));
+  --text: #f8f8f8;
+  --muted: #b8c8f0;
+  --accent: #f8e050;
+  --danger: #ff8070;
+  --fs: calc(13px * var(--s)); /* 1 píxel de la fuente = --s píxeles */
+  --fs-sm: max(13px, calc(6.5px * var(--s)));
+  --lh: calc(14px * var(--s));
+  --shadow: var(--px) var(--px) 0 #000;
+  --font: 'PMD Message', 'Trebuchet MS', sans-serif;
+  --title: 'PMD Title', 'PMD Message', sans-serif;
+}
+@media (max-width: 1100px), (max-height: 700px) {
+  :root { --s: 1; }
+}
+@media (min-width: 1800px) and (min-height: 1000px) {
+  :root { --s: 3; }
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: #000; color: var(--text); font-family: var(--font); font-size: var(--fs); line-height: var(--lh); overflow: hidden; text-shadow: var(--shadow); }
+#game { position: fixed; inset: 0; }
+.hidden { display: none !important; }
+img, canvas { image-rendering: pixelated; }
+
+/* ── Cajas (ui/kit.ts → win) ──
+ * Nine-slice de 24×24 con cortes de 8 px. Los bordes se REPITEN (repeat): la
+ * trama de 4 px del original no se deforma a ningún tamaño. Margen interior como
+ * en el original: el texto empieza a 11 px del borde exterior (8 + 3). */
+.win, .panel, .box {
+  --frame: url('/assets/ui/frame-blue.png');
+  border: calc(8px * var(--s)) solid transparent;
+  border-image: var(--frame) 8 fill / calc(8px * var(--s)) repeat;
+  image-rendering: pixelated;
+  padding: 0 calc(3px * var(--s));
+  background: none;
+  min-width: calc(16px * var(--s)); min-height: calc(16px * var(--s));
+}
+.win-green { --frame: url('/assets/ui/frame-green.png'); }
+.win-pink { --frame: url('/assets/ui/frame-pink.png'); }
+.win-plain { --frame: url('/assets/ui/plain-blue.png'); }
+.win-plain.win-green { --frame: url('/assets/ui/plain-green.png'); }
+.win-plain.win-pink { --frame: url('/assets/ui/plain-pink.png'); }
+.win-title { text-align: center; margin-bottom: calc(4px * var(--s)); }
+
+/* Marco de retrato original: 4 px de borde (5 abajo) alrededor de un hueco de --ps px. */
+.pf {
+  --ps: 40; --pframe: url('/assets/ui/portrait-blue.png');
+  display: inline-block; flex: none; vertical-align: middle; line-height: 0; box-sizing: content-box;
+  width: calc(var(--ps) * 1px * var(--s)); height: calc(var(--ps) * 1px * var(--s));
+  border-style: solid; border-color: transparent;
+  border-width: calc(4px * var(--s)) calc(4px * var(--s)) calc(5px * var(--s));
+  border-image: var(--pframe) 4 4 5 4 / calc(4px * var(--s)) calc(4px * var(--s)) calc(5px * var(--s)) repeat;
+  image-rendering: pixelated; background: #202020; background-clip: content-box;
+}
+.pf-green { --pframe: url('/assets/ui/portrait-green.png'); }
+.pf-pink { --pframe: url('/assets/ui/portrait-pink.png'); }
+
+/* Interfaz original de la ROM (tools/import-rom-ui.mjs, clase puesta por ui/romUi.ts):
+ * caja FONT/frame_b0 (24×24, cortes de 8), marco fino de retrato (8 px por lado,
+ * centro hueco) y fuente FONT/kanji.dat (celda de 12 px). */
+.rom-ui { --font: 'PMD Sky', 'PMD Message', sans-serif; --title: 'PMD Title', 'PMD Sky', sans-serif; --fs: calc(12px * var(--s)); }
+.rom-ui .win, .rom-ui .panel, .rom-ui .box { --frame: url('/assets/ui/rom/frame-blue.png'); }
+.rom-ui .win-green { --frame: url('/assets/ui/rom/frame-green.png'); }
+.rom-ui .win-pink { --frame: url('/assets/ui/rom/frame-pink.png'); }
+.rom-ui .win-plain { --frame: url('/assets/ui/rom/plain-blue.png'); }
+.rom-ui .win-plain.win-green { --frame: url('/assets/ui/rom/plain-green.png'); }
+.rom-ui .win-plain.win-pink { --frame: url('/assets/ui/rom/plain-pink.png'); }
+.rom-ui .pf {
+  --pframe: url('/assets/ui/rom/portrait-blue.png');
+  border-width: calc(8px * var(--s));
+  border-image: var(--pframe) 8 / calc(8px * var(--s)) repeat;
+}
+.rom-ui .pf-green { --pframe: url('/assets/ui/rom/portrait-green.png'); }
+.rom-ui .pf-pink { --pframe: url('/assets/ui/rom/portrait-pink.png'); }
+.pf .pf-img { display: block; width: 100%; height: 100%; image-rendering: pixelated; }
+.pf .pf-img.ph { text-align: center; color: #111; text-shadow: none; line-height: calc(var(--ps) * 1px * var(--s)); }
+
+/* Diálogo: retrato encima de la caja, alineado a su izquierda. */
+.dlg { display: flex; flex-direction: column; align-items: flex-start; }
+.dlg .dlg-pf { margin: 0 0 calc(2px * var(--s)) calc(4px * var(--s)); }
+.dlg .dlg-box { align-self: stretch; min-height: calc((var(--lh) * 3) + 16px * var(--s)); }
+.dlg-name { color: var(--accent); }
+
+/* Lista con cursor (movimientos, objetos, menús). */
+.mlist { display: flex; flex-direction: column; }
+.mitem { display: flex; align-items: center; gap: calc(3px * var(--s)); width: 100%; text-align: left; }
+.mitem .ml { flex: 1; min-width: 0; display: flex; align-items: center; gap: calc(2px * var(--s)); white-space: nowrap; overflow: hidden; }
+.mitem .mr { color: var(--muted); white-space: nowrap; }
+.win-choices { display: inline-block; padding-right: calc(5px * var(--s)); }
+
+/* Fuente de mazmorra (ui/kit.ts → titleText): recortes de pmd-title.png como máscara. */
+.tt { --k: var(--ts, var(--s)); display: inline-flex; vertical-align: middle; height: calc(var(--th) * 1px * var(--k)); text-shadow: none; }
+.tt i {
+  flex: none; height: 100%; image-rendering: pixelated;
+  width: calc(var(--w, 0) * 1px * var(--k)); margin-right: calc((var(--a) - var(--w, 0)) * 1px * var(--k));
+  background: var(--tc, #fff);
+  -webkit-mask: url('/assets/fonts/pmd-title.png') no-repeat; mask: url('/assets/fonts/pmd-title.png') no-repeat;
+  -webkit-mask-size: calc(501px * var(--k)) calc(200px * var(--k)); mask-size: calc(501px * var(--k)) calc(200px * var(--k));
+  -webkit-mask-position: calc(var(--x, 0) * -1px * var(--k)) calc(var(--y, 0) * -1px * var(--k));
+  mask-position: calc(var(--x, 0) * -1px * var(--k)) calc(var(--y, 0) * -1px * var(--k));
+}
+.tt i.sp { background: none; }
+h1, h2, h3 { font-family: var(--title); font-weight: normal; color: var(--accent); margin: 0 0 var(--px); line-height: 1.1; }
+h1 { font-size: calc(25px * var(--s)); }
+h2, h3 { font-size: 25px; }
+small, .muted { color: var(--muted); font-size: var(--fs-sm); line-height: var(--fs-sm); }
+/* Las fuentes de píxeles no tienen negrita: el énfasis se marca con color, como en los juegos. */
+b, strong { font-weight: normal; color: var(--accent); }
+p { margin: calc(2px * var(--s)) 0; }
+
+/* Botones como opciones de menú: cursor y texto amarillo al seleccionar. */
+button {
+  font: inherit; color: var(--text); text-shadow: var(--shadow); background: none; border: 0; cursor: pointer;
+  padding: 0 calc(3px * var(--s)) 0 calc(11px * var(--s)); position: relative; line-height: var(--lh);
+}
+button::before {
+  content: ''; position: absolute; left: calc(1px * var(--s)); top: 50%; width: calc(8px * var(--s)); height: calc(9px * var(--s));
+  transform: translateY(-50%); background: url('/assets/ui/cursor.png') no-repeat center / contain; image-rendering: pixelated; opacity: 0;
+}
+button:hover:not(:disabled), button.sel:not(:disabled), button:focus-visible { color: var(--accent); outline: none; }
+button:hover:not(:disabled)::before, button.sel:not(:disabled)::before, button:focus-visible::before { opacity: 1; }
+button:disabled { color: #8890a8; cursor: default; }
+button.primary {
+  border: calc(8px * var(--s)) solid transparent; border-image: url('/assets/ui/frame-blue.png') 8 fill / calc(8px * var(--s)) repeat;
+  padding-left: calc(11px * var(--s)); color: var(--accent);
+}
+input {
+  font: inherit; color: var(--text); text-shadow: var(--shadow); width: 100%;
+  padding: var(--px) calc(3px * var(--s)); background: #080c30; border: var(--px) solid #8098d0; outline: none;
+}
+input:focus { border-color: var(--accent); }
+label { display: block; margin: calc(2px * var(--s)) 0; color: var(--muted); }
+.dot { display: inline-block; width: calc(6px * var(--s)); height: calc(6px * var(--s)); border: var(--px) solid #000; vertical-align: middle; margin-right: calc(2px * var(--s)); }
+.item-icon { width: calc(16px * var(--s)); height: calc(16px * var(--s)); image-rendering: pixelated; vertical-align: middle; margin-right: calc(2px * var(--s)); }
+.sp .pf { margin-bottom: var(--px); }
+.lobby .pf { margin-right: calc(3px * var(--s)); }
+
+/* ── Menú y paneles ── */
+#menu { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; padding: calc(8px * var(--s));
+  background: rgba(0, 0, 16, 0.5); overflow-y: auto; animation: menu-in 0.2s ease-out; }
+@keyframes menu-in { from { opacity: 0; } to { opacity: 1; } }
+.menu { width: min(calc(420px * var(--s)), 100%); max-height: 100%; overflow-y: auto; }
+.menu .sub { color: var(--muted); }
+.menu .error { color: var(--danger); }
+.menu .info { color: var(--muted); min-height: var(--lh); }
+.species { display: grid; grid-template-columns: repeat(auto-fill, minmax(calc(52px * var(--s)), 1fr)); gap: var(--px); margin: var(--px) 0; }
+.sp { padding: var(--px); text-align: center; display: flex; flex-direction: column; align-items: center; }
+.sp::before { display: none; }
+.sp b { font-weight: normal; }
+.sp.sel { color: var(--accent); background: rgba(248, 224, 80, 0.12); outline: var(--px) solid var(--accent); }
+.row { display: flex; gap: calc(6px * var(--s)); flex-wrap: wrap; margin-top: calc(3px * var(--s)); }
+.menu .row button { flex: 1; }
+.history, .lobby { margin: 0; padding-left: calc(6px * var(--s)); list-style: none; }
+.history li, .lobby li { margin: var(--px) 0; }
+.history .cleared { color: #a8f0a0; }
+.history .defeated { color: #f0a8a0; }
+
+/* ── HUD de mazmorra ── */
+#hud { position: fixed; inset: 0; pointer-events: none; }
+#hud > * { pointer-events: auto; }
+/* Minimapa a su tamaño original (4 px por casilla, como en la DS), encima del escenario. */
+#hud-minimap { position: absolute; top: calc(4px * var(--s)); left: calc(4px * var(--s)); width: calc(224px * var(--s)); height: calc(128px * var(--s)); pointer-events: none; image-rendering: pixelated; }
+#hud-minimap.hidden { display: none; }
+#hud.prompting #hud-log { visibility: hidden; }
+/* Cambio de piso: pantalla negra con el nombre de la mazmorra y la planta. */
+#hud-floorcard { position: absolute; inset: 0; z-index: 30; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: calc(6px * var(--s)); opacity: 1; transition: opacity 0.3s; pointer-events: none; }
+#hud-floorcard.out { opacity: 0; }
+#hud-floorcard .fc-name { display: flex; flex-wrap: wrap; justify-content: center; column-gap: calc(6px * var(--s)); }
+
+/* Equipo: filas compactas sin caja (como Rescue Team DX). Franja translúcida que se
+ * desvanece hacia la izquierda y línea blanca fina debajo. */
+#hud-team { position: absolute; top: calc(2px * var(--s)); right: 0; width: min(calc(150px * var(--s)), 46vw); display: flex; flex-direction: column; gap: calc(1px * var(--s)); pointer-events: none; }
+#hud-team .member { display: flex; align-items: center; gap: calc(3px * var(--s)); padding: calc(1px * var(--s)) calc(3px * var(--s)) calc(2px * var(--s)) calc(10px * var(--s));
+  background:
+    linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.9) calc(16px * var(--s))) left bottom / 100% var(--px) no-repeat,
+    linear-gradient(90deg, transparent, rgba(8, 12, 32, 0.6) calc(16px * var(--s))); }
+#hud-team .member:not(.big) { margin-left: calc(20px * var(--s)); }
+#hud-team .member.ko { filter: grayscale(0.8) brightness(0.7); }
+#hud-team .info { flex: 1; min-width: 0; }
+#hud-team .l1 { white-space: nowrap; overflow: hidden; display: flex; align-items: center; gap: calc(3px * var(--s)); }
+#hud-team .name { overflow: hidden; text-overflow: ellipsis; }
+#hud-team .tag { color: #ffc0a0; }
+#hud-team .lv { color: var(--accent); }
+#hud-team .l2 { display: flex; align-items: center; gap: calc(3px * var(--s)); }
+#hud-team .hpl { color: var(--accent); }
+#hud-team .hpv { margin-left: auto; }
+#hud-team .l3 { color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#hud-team em { font-style: normal; background: var(--c); color: #000; text-shadow: none; padding: 0 var(--px); margin-left: calc(2px * var(--s)); }
+/* Tipografía del HUD original (Assets/HUD/Hud.png): cada glifo es un recorte de la hoja. */
+.hg {
+  --k: var(--hs, var(--s));
+  display: inline-block; vertical-align: middle; flex: none;
+  width: calc(var(--w) * 1px * var(--k)); height: calc(var(--h) * 1px * var(--k));
+  background: url('/assets/ui/hud-glyphs.png') no-repeat;
+  background-size: calc(var(--sw, 182) * 1px * var(--k)) calc(var(--sh, 46) * 1px * var(--k));
+  background-position: calc(var(--x) * -1px * var(--k)) calc(var(--y) * -1px * var(--k));
+  image-rendering: pixelated;
+}
+/* Con la ROM importada: dígitos y etiquetas en español (P · Nv. · PS) de dungeon.bin 1020. */
+.rom-ui .hg { background-image: url('/assets/ui/rom/hud-glyphs.png'); }
+.hgn, .hgl { display: inline-flex; align-items: center; white-space: nowrap; }
+.hgl > .hg:first-child { margin-right: calc(1px * var(--hs, var(--s))); }
+/* Barra de HP original: verde sobre naranja (vida perdida). */
+.hpbar { flex: 1; display: inline-block; height: calc(6px * var(--s)); min-width: 0; /* se encoge si el texto no deja sitio (no desborda el HUD) */
+  background: url('/assets/ui/hud-bar-red.png') 0 0 / 100% 100% no-repeat; image-rendering: pixelated; }
+.hpbar b { display: block; height: 100%; background: url('/assets/ui/hud-bar-green.png') 0 0 / 100% 100% no-repeat; image-rendering: pixelated; transition: width 0.2s; }
+
+#hud-turn { position: absolute; top: calc(3px * var(--s)); left: 50%; transform: translateX(-50%); white-space: nowrap; }
+#hud-turn.combat { color: #ffd0c0; }
+
+/* Franja inferior: ubicación · mensajes · movimientos (los mensajes ocupan el hueco). */
+#hud-bottom { position: absolute; left: calc(3px * var(--s)); right: calc(3px * var(--s)); bottom: calc(3px * var(--s)); display: flex; align-items: flex-end;
+  gap: calc(3px * var(--s)); pointer-events: none; }
+#hud-bottom > * { pointer-events: auto; }
+/* Ubicación: texto suelto con la fuente de mazmorra, contorno oscuro de 1 px y una
+ * línea blanca fina bajo el nombre que se desvanece a la derecha (sin caja). */
+#hud-floor { flex: none; max-width: 42%; pointer-events: none; padding: 0 0 calc(1px * var(--s)) calc(3px * var(--s));
+  --ol: #101830;
+  filter: drop-shadow(var(--px) 0 0 var(--ol)) drop-shadow(calc(-1 * var(--px)) 0 0 var(--ol)) drop-shadow(0 var(--px) 0 var(--ol)) drop-shadow(0 calc(-1 * var(--px)) 0 var(--ol)); }
+#hud-floor .dname { display: flex; flex-wrap: wrap; column-gap: calc(6px * var(--s)); padding-right: calc(20px * var(--s));
+  margin-bottom: calc(2px * var(--s)); background: linear-gradient(90deg, #fff 75%, transparent) left bottom / 100% var(--px) no-repeat; }
+#hud-floor .dname .tt { margin-bottom: calc(-2px * var(--s)); }
+#hud-floor .dfloor { padding-left: calc(8px * var(--s)); }
+
+#hud-log { flex: 1; min-width: 0; max-width: calc(250px * var(--s)); margin: 0 auto; height: calc(var(--lh) * 3 + 16px * var(--s)); overflow: hidden; transition: opacity 0.6s; cursor: pointer; }
+#hud-log.idle { opacity: 0; }
+#hud-log.expanded { height: calc(var(--lh) * 14 + 16px * var(--s)); overflow-y: auto; opacity: 1; }
+#hud-log div { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+#hud-moves { flex: none; min-width: calc(110px * var(--s)); max-width: 40vw; }
+#hud-moves .mitem { padding-left: calc(10px * var(--s)); }
+#hud-moves .mitem.nopp, #hud-moves .mitem.empty { color: #8890a8; cursor: default; }
+#hud-moves .mitem.empty::before { display: none; }
+#hud-moves kbd { font: inherit; color: var(--muted); }
+.tdot { width: calc(4px * var(--s)); height: calc(4px * var(--s)); border: var(--px) solid #000; flex: none; }
+.t-normal { background: #a8a878; } .t-fire { background: #f08030; } .t-water { background: #6890f0; } .t-grass { background: #78c850; }
+.t-electric { background: #f8d030; } .t-ice { background: #98d8d8; } .t-fighting { background: #c03028; } .t-poison { background: #a040a0; }
+.t-ground { background: #e0c068; } .t-flying { background: #a890f0; } .t-psychic { background: #f85888; } .t-bug { background: #a8b820; }
+.t-rock { background: #b8a038; } .t-ghost { background: #705898; } .t-dragon { background: #7038f8; } .t-dark { background: #705848; }
+.t-steel { background: #b8b8d0; } .t-none { background: #d0d0d0; }
+
+#hud-bag { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: min(calc(180px * var(--s)), 92vw); display: flex; flex-direction: column; }
+#hud-bag .bag-list { max-height: 60vh; overflow-y: auto; }
+#hud-bag .win-title { display: flex; align-items: center; justify-content: center; gap: calc(3px * var(--s)); position: relative; }
+#hud-bag .close { position: absolute; right: 0; padding: 0 calc(2px * var(--s)); }
+#hud-bag .close::before { display: none; }
+#hud-bag .desc { min-height: calc(var(--lh) * 2 + 16px * var(--s)); }
+#hud-bag .empty, .hint { color: var(--muted); }
+
+/* Escaleras: caja Sí/No encima, a la derecha, de la caja de diálogo (como en EoS). */
+#hud-prompt { position: absolute; left: 50%; bottom: calc(3px * var(--s)); transform: translateX(-50%); width: min(calc(250px * var(--s)), 92vw); display: flex; flex-direction: column; align-items: flex-end; }
+#hud-prompt .dlg { align-self: stretch; }
+#hud-toast { position: absolute; top: calc(60px * var(--s)); left: 50%; transform: translateX(-50%); pointer-events: none; color: #ffd0c0; white-space: nowrap; }
+#hud-banner { position: absolute; top: 34%; left: 50%; transform: translate(-50%, -50%); font-family: var(--title); font-size: calc(25px * var(--s)); line-height: 1.2;
+  padding: calc(2px * var(--s)) calc(10px * var(--s)); pointer-events: none; animation: banner-in 0.25s ease-out; white-space: nowrap; }
+#hud-banner.combat { color: #ffc8b8; }
+@keyframes banner-in { from { transform: translate(-50%, -50%) scale(1.25); opacity: 0; } to { transform: translate(-50%, -50%) scale(1); opacity: 1; } }
+#hud-help { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: min(calc(280px * var(--s)), 92vw); }
+#hud-end { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.55); display: flex; align-items: center; justify-content: center; }
+.end-box { width: min(calc(230px * var(--s)), 92vw); text-align: center; }
+.end-box table { margin: calc(2px * var(--s)) auto; text-align: left; border-spacing: calc(8px * var(--s)) 0; }
+.end-box td:last-child { color: var(--accent); text-align: right; }
+#touch-controls { display: none; }
+
+@media (pointer: coarse), (max-width: 720px) {
+  #hud-minimap { width: 112px; height: 64px; }
+  #hud-team { width: 180px; }
+  #hud-team .member:not(.me) { display: none; }
+  #hud-bottom { bottom: 150px; }
+  #hud-moves { width: 150px; }
+  #touch-controls { display: flex; position: absolute; bottom: 8px; left: 8px; gap: 8px; align-items: flex-end; }
+  .dpad { display: grid; grid-template-columns: repeat(3, 40px); gap: 3px; }
+  .dpad button, .tbtns button { padding: 0; border: 8px solid transparent; border-image: url('/assets/ui/frame-blue.png') 8 fill / 8px repeat; }
+  .dpad button { width: 40px; height: 40px; }
+  .dpad button::before, .tbtns button::before { display: none; }
+  .tbtns { display: flex; flex-direction: column; gap: 6px; }
+  .tbtns button { height: 40px; padding: 0 6px; }
+}
+
+/* ── Plaza (zonas explorables) ── */
+#town-hud { position: fixed; inset: 0; pointer-events: none; }
+#town-hud > * { pointer-events: auto; }
+#th-zone { position: absolute; top: calc(3px * var(--s)); left: calc(3px * var(--s)); }
+#th-zone b { font-family: var(--title); font-weight: normal; font-size: 25px; color: var(--accent); }
+#th-zone .code { color: #a0e8ff; margin-left: calc(4px * var(--s)); }
+#th-party { position: absolute; top: calc(3px * var(--s)); right: calc(3px * var(--s)); width: calc(120px * var(--s)); }
+#th-party .member { display: flex; align-items: center; flex-wrap: wrap; margin: var(--px) 0; }
+#th-party .member.ko { opacity: 0.5; }
+#th-party .pf { margin-right: calc(3px * var(--s)); }
+#th-party small { flex-basis: 100%; padding-left: calc(31px * var(--s)); }
+#th-dialog { position: absolute; left: 50%; bottom: calc(6px * var(--s)); transform: translateX(-50%); width: min(calc(260px * var(--s)), 92vw); }
+#th-dialog .row { justify-content: flex-start; }
+#th-dialog .row button { flex: none; }
+#th-dialog button.primary { border: 0; border-image: none; padding-left: calc(11px * var(--s)); }
+#th-toast { position: absolute; top: calc(30px * var(--s)); left: 50%; transform: translateX(-50%); pointer-events: none; white-space: nowrap;
+  padding: 0 calc(4px * var(--s)); }
+#th-help { position: absolute; bottom: calc(3px * var(--s)); left: calc(3px * var(--s)); color: var(--muted); font-size: var(--fs-sm); pointer-events: none; }

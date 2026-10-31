@@ -2,7 +2,7 @@ node_modules
 dist
 *.log
 .env
-data/
+/data/
 smoke-output
 # Nunca subir ROMs, partidas guardadas ni volcados del juego.
 *.nds

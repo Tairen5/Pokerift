@@ -352,6 +352,8 @@ function timeline(points, initial) {
 /** Nivel de la envolvente (0–1) a los t segundos de empezar la nota (sin la liberación). */
 function envLevel(e, t) {
   if (!e.on) return 1;
+  // La primera tanda de una nota empieza una fracción de muestra antes que ella.
+  t = Math.max(0, t);
   const atk = envTime(e.attack, e.mult), hold = envTime(e.hold, e.mult), dec = envTime(e.decay, e.mult), dec2 = envTime(e.decay2, e.mult);
   const a0 = e.atkvol / 127, sus = e.sustain / 127;
   if (t < atk) return a0 + (1 - a0) * (t / atk);
@@ -415,7 +417,7 @@ function renderSong(id) {
       const baseInc = (w.rate / RATE) * 2 ** ((e.note - split.rootkey) / 12);
       const gain = (e.vel / 127) * (program.vol / 127) * (split.vol / 127);
       const panBase = program.pan - 64 + (split.pan - 64);
-      let pos = 0;
+      let pos = 0, prevL = 0, prevR = 0, ended = false;
       const s0 = Math.floor(t0 * RATE), s1 = Math.min(N, Math.ceil(tEnd * RATE));
       const BLOCK = 64;
       voices++;
@@ -423,28 +425,34 @@ function renderSong(id) {
         const t = s / RATE;
         const range = bendRange(t) || split.bend || 2;
         const inc = baseInc * 2 ** (((bend(t) / 8192) * range) / 12);
-        const lvl = t < tOff ? envLevel(envp, t - t0) : levelOff * Math.max(0, 1 - (t - tOff) / rel);
+        const lvl = t < tOff ? envLevel(envp, t - t0) : rel > 0 ? levelOff * Math.max(0, 1 - (t - tOff) / rel) : 0;
         const g = gain * lvl * (vol(t) / 127) * (expr(t) / 127);
         const p = Math.min(127, Math.max(0, pan(t) + panBase)) / 127;
         const gl = g * Math.cos((p * Math.PI) / 2), gr = g * Math.sin((p * Math.PI) / 2);
         const n = Math.min(BLOCK, s1 - s);
+        // La ganancia cambia gradualmente dentro de la tanda: a escalones se oiría un zumbido.
+        const gl0 = s === s0 ? gl : prevL, gr0 = s === s0 ? gr : prevR;
+        prevL = gl;
+        prevR = gr;
+        const data = smp.data, len = data.length, looping = smp.loops && smp.loopStart < len - 1;
         for (let k = 0; k < n; k++) {
-          const ip = pos | 0;
-          if (ip + 1 >= smp.data.length) {
-            if (!smp.loops || smp.loopStart >= smp.data.length - 1) {
-              pos = Infinity;
+          if (pos >= len) {
+            if (!looping) {
+              ended = true;
               break;
             }
-            pos -= smp.data.length - smp.loopStart;
-            continue;
+            // Vuelta del bucle sin perder ninguna muestra de salida ni la fase.
+            pos = smp.loopStart + ((pos - smp.loopStart) % (len - smp.loopStart));
           }
-          const fr = pos - ip;
-          const v = smp.data[ip] + (smp.data[ip + 1] - smp.data[ip]) * fr;
-          L[s + k] += v * gl;
-          R[s + k] += v * gr;
+          const ip = pos | 0;
+          const next = ip + 1 < len ? data[ip + 1] : looping ? data[smp.loopStart] : 0;
+          const v = data[ip] + (next - data[ip]) * (pos - ip);
+          const f = (k + 1) / n;
+          L[s + k] += v * (gl0 + (gl - gl0) * f);
+          R[s + k] += v * (gr0 + (gr - gr0) * f);
           pos += inc;
         }
-        if (pos === Infinity) break;
+        if (ended) break;
       }
     }
   });
@@ -467,6 +475,8 @@ function renderSong(id) {
   // Normalización de pico (-1 dBFS).
   let peak = 0;
   for (let i = 0; i < left.length; i++) peak = Math.max(peak, Math.abs(left[i]), Math.abs(right[i]));
+  // Un valor no finito se oiría como un golpe de ruido al codificar y desactivaría la normalización.
+  if (!Number.isFinite(peak)) throw new Error(`${name}: la síntesis ha producido valores no finitos`);
   const k = peak ? 0.89 / peak : 1;
   for (let i = 0; i < left.length; i++) (left[i] *= k), (right[i] *= k);
   return { name, smdName: smd.toString('latin1', 0x20, 0x30).replace(/\0.*/, ''), left, right, loopStart, voices, missing: [...missing] };
